@@ -1,0 +1,26 @@
+use axum::{Router, http::StatusCode, response::IntoResponse, routing::post};
+use illegal_numbers_check::ILLEGAL_NUMBERS;
+use std::net::SocketAddr;
+
+#[tokio::main]
+async fn main() {
+    let app = Router::new().route("/check", post(check_number));
+
+    let addr = SocketAddr::from(([0, 0, 0, 0], 1234));
+    println!("Server running on http://{}", addr);
+
+    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+    axum::serve(listener, app.into_make_service())
+        .await
+        .unwrap();
+}
+
+async fn check_number(body: String) -> impl IntoResponse {
+    let contains_illegal = ILLEGAL_NUMBERS.iter().any(|num| body.contains(num));
+
+    if contains_illegal {
+        (StatusCode::OK, "true")
+    } else {
+        (StatusCode::OK, "false")
+    }
+}
