@@ -5,6 +5,9 @@ use tokio::spawn;
 
 #[tokio::main]
 async fn main() {
+    // Pre-warm the data set so the first request does not get penalized.
+    _ = ILLEGAL_NUMBERS.len();
+    
     spawn(async move {
         let app = Router::new().route("/check", post(check_number));
 
