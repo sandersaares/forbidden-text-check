@@ -3,7 +3,6 @@ use hyper_util::rt::TokioIo;
 use hyper_util::service::TowerToHyperService;
 use many_cpus::ProcessorSet;
 use std::net::SocketAddr;
-use std::thread;
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc::{Receiver, Sender, channel};
 use tower::Service;
@@ -20,6 +19,7 @@ async fn main() {
     let addr = SocketAddr::from(([0, 0, 0, 0], 1234));
     println!("Server starting on http://{}", addr);
 
+    let all_processors = ProcessorSet::all();
     let num_workers = ProcessorSet::all().len();
     println!("Starting {} worker threads", num_workers);
 
@@ -31,7 +31,9 @@ async fn main() {
         let (tx, rx) = channel(WORKER_QUEUE_SIZE);
         work_txs.push(tx);
 
-        thread::spawn(move || worker_entrypoint(i, rx));
+        // For each call, we spawn a thread that the OS is allowed to assign
+        // to any of the processors in the set to balance load among them.
+        all_processors.spawn_thread(move |_| worker_entrypoint(i, rx));
     }
 
     listener_entrypoint(addr, work_txs).await;

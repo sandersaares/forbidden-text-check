@@ -7,9 +7,8 @@ edition = "2024"
 axum = "0.8.1"
 hyper = "1.6.0"
 hyper-util = { version = "0.1.10", features = ["tokio"] }
-linked = "0.0.2"
-region_cached = "0.0.3"
-many_cpus = "0.0.2"
+region_cached = "0.0.4"
+many_cpus = "0.0.3"
 num_cpus = "1.16.0"
 tokio = { version = "1.44.1", features = ["full"] }
 tower = "0.5.2"
