@@ -515,7 +515,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0fa18c04351039d00a40b56b1a5ce239fe5b5e3f4b8e6ec9860c312664548875"
 dependencies = [
  "hash_hasher",
- "linked_macros",
+ "linked_macros 0.0.4",
+ "negative-impl",
+ "paste",
+ "simple-mermaid",
+]
+
+[[package]]
+name = "linked"
+version = "0.0.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "09a98bdb934f5e1e53912f1260d5933e5f7ce48bf80fb09dcabe47bd59f2e22e"
+dependencies = [
+ "hash_hasher",
+ "linked_macros 0.0.5",
  "negative-impl",
  "paste",
  "simple-mermaid",
@@ -527,7 +540,16 @@ version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f3c90c208035744c7849bb5b16d76c283df3a44408711f21e89c8c802c3665b2"
 dependencies = [
- "linked_macros_impl",
+ "linked_macros_impl 0.0.4",
+]
+
+[[package]]
+name = "linked_macros"
+version = "0.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4e7a82f54d3955c57313608c650235b76b7c8ea60d93e1a5b26f3128955e5254"
+dependencies = [
+ "linked_macros_impl 0.0.5",
 ]
 
 [[package]]
@@ -535,6 +557,17 @@ name = "linked_macros_impl"
 version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "436dd1e1331a7716ea581a26ca19edb496ac031da6bc9140430aa0b6444e921c"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "linked_macros_impl"
+version = "0.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8da888b05c97409771f5d9ed6b7e4cf6a5a10c785db04ecae10680650de174ba"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -910,7 +943,7 @@ checksum = "71dd2be1e7243c40f0e5fbf5788dcd614ce6845a2dbfbacbcb385b44c170a1a4"
 dependencies = [
  "arc-swap",
  "derive_more",
- "linked",
+ "linked 0.0.5",
  "many_cpus",
  "rsevents",
  "simple-mermaid",
@@ -918,12 +951,12 @@ dependencies = [
 
 [[package]]
 name = "region_local"
-version = "0.0.6"
+version = "0.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3b812771a0bc4da53f8d8e6920a707ee115aeecdba773de3ad0197d3ee369128"
+checksum = "f90f23a532f5ffae73d5fb5ff5b61e94ae9370de9e994dab3f4774f2c81c5e39"
 dependencies = [
  "arc-swap",
- "linked",
+ "linked 0.0.6",
  "many_cpus",
  "simple-mermaid",
 ]
