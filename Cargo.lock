@@ -509,9 +509,9 @@ checksum = "c19937216e9d3aa9956d9bb8dfc0b0c8beb6058fc4f7a4dc4d850edf86a237d6"
 
 [[package]]
 name = "linked"
-version = "0.0.3"
+version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "265c7898a336da3c78d41f8ba6543e150f5b0593ff0c75be57cfe3adb502a843"
+checksum = "68ac7cebe330e73dedaae90084d16eb02f885f322e546998659f178787039672"
 dependencies = [
  "hash_hasher",
  "linked_macros",
@@ -558,9 +558,9 @@ checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
 
 [[package]]
 name = "many_cpus"
-version = "0.0.3"
+version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5adcba4915cb0c649461c37ab4a2ea1bb53da8f8694d91cdf429dccfb4e5caa9"
+checksum = "14829934133bb084f32e0b0c855d1ca330957c9aea964258e18ab7cd155a0d8b"
 dependencies = [
  "cpulist",
  "derive_more",
@@ -903,13 +903,15 @@ dependencies = [
 
 [[package]]
 name = "region_cached"
-version = "0.0.4"
+version = "0.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "401f10196f9406f3d2599c634c3973568cd0ec661b6cd52647bc28d7a303294d"
+checksum = "b5cddf6a2adeb6b7fe0988f3509ea0830fb35d9b45ff51c5e5d6c496188df3f3"
 dependencies = [
  "arc-swap",
+ "derive_more",
  "linked",
  "many_cpus",
+ "rsevents",
  "simple-mermaid",
 ]
 
@@ -923,6 +925,15 @@ dependencies = [
  "hashbrown 0.14.5",
  "rustc-hash",
  "text-size",
+]
+
+[[package]]
+name = "rsevents"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e8e29769fda0194d58e06d876d82337aac382415df547f073f44ffea0bb0c651"
+dependencies = [
+ "parking_lot_core",
 ]
 
 [[package]]
