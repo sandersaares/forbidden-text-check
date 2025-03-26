@@ -24,13 +24,13 @@ async fn main() {
 
     let mut work_txs = Vec::with_capacity(num_workers);
 
-    for i in 0..num_workers {
+    for _ in 0..num_workers {
         const WORKER_QUEUE_SIZE: usize = 4;
 
         let (tx, rx) = channel(WORKER_QUEUE_SIZE);
         work_txs.push(tx);
 
-        thread::spawn(move || worker_entrypoint(i, rx));
+        thread::spawn(move || worker_entrypoint(rx));
     }
 
     listener_entrypoint(addr, work_txs).await;
@@ -50,7 +50,7 @@ async fn listener_entrypoint(addr: SocketAddr, work_txs: Vec<Sender<TcpStream>>)
     }
 }
 
-fn worker_entrypoint(_worker_index: usize, mut rx: Receiver<TcpStream>) {
+fn worker_entrypoint(mut rx: Receiver<TcpStream>) {
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(1)
         .enable_all()

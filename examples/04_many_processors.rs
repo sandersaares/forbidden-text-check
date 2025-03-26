@@ -3,6 +3,7 @@ use hyper_util::rt::TokioIo;
 use hyper_util::service::TowerToHyperService;
 use many_cpus::ProcessorSet;
 use std::net::SocketAddr;
+use std::sync::{Arc, Mutex};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc::{Receiver, Sender, channel};
 use tower::Service;
@@ -23,20 +24,30 @@ async fn main() {
     let num_workers = ProcessorSet::all().len();
     println!("Starting {} worker threads", num_workers);
 
-    let mut work_txs = Vec::with_capacity(num_workers);
+    const WORKER_QUEUE_SIZE: usize = 4;
 
-    for i in 0..num_workers {
-        const WORKER_QUEUE_SIZE: usize = 4;
+    let (txs, rxs) = (0..num_workers)
+        .map(|_| channel(WORKER_QUEUE_SIZE))
+        .unzip::<_, _, Vec<_>, Vec<_>>();
 
-        let (tx, rx) = channel(WORKER_QUEUE_SIZE);
-        work_txs.push(tx);
+    // Each worker thread will pop one Receiver out of this vector, so it needs to be shared.
+    let rxs = Arc::new(Mutex::new(rxs));
 
-        // For each call, we spawn a thread that the OS is allowed to assign
-        // to any of the processors in the set to balance load among them.
-        all_processors.spawn_thread(move |_| worker_entrypoint(i, rx));
-    }
+    // To achieve a wide distribution of workers across processors, we must tell the operating
+    // system to use specific processors for specific threads. Otherwise, at least on Windows,
+    // the OS will often try keep all threads together in the same memory region, even when this
+    // is not optimal because it leaves unused processors idle. This method will execute the
+    // callback once for every processor, on a thread pinned to that specific processor.
+    all_processors.spawn_threads(move |_| {
+        let rx = {
+            let mut rxs = rxs.lock().unwrap();
+            rxs.pop().unwrap()
+        };
 
-    listener_entrypoint(addr, work_txs).await;
+        worker_entrypoint(rx);
+    });
+
+    listener_entrypoint(addr, txs).await;
 }
 
 async fn listener_entrypoint(addr: SocketAddr, work_txs: Vec<Sender<TcpStream>>) {
@@ -53,7 +64,7 @@ async fn listener_entrypoint(addr: SocketAddr, work_txs: Vec<Sender<TcpStream>>)
     }
 }
 
-fn worker_entrypoint(_worker_index: usize, mut rx: Receiver<TcpStream>) {
+fn worker_entrypoint(mut rx: Receiver<TcpStream>) {
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(1)
         .enable_all()
