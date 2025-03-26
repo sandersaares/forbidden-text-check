@@ -13,7 +13,7 @@ use tower::Service;
 #[tokio::main(worker_threads = 1)]
 async fn main() {
     // Pre-warm the data set.
-    illegal_numbers_check::ILLEGAL_NUMBERS_REGIONAL.with_cached(|_| ());
+    illegal_numbers_check::ILLEGAL_NUMBERS_REGION_CACHED.with_cached(|_| ());
 
     increase_ulimit();
 
@@ -89,7 +89,7 @@ fn worker_entrypoint(_worker_index: usize, mut rx: Receiver<TcpStream>) {
 
 // Handler for the /check endpoint
 async fn check_number(body: String) -> impl IntoResponse {
-    let contains_illegal = illegal_numbers_check::ILLEGAL_NUMBERS_REGIONAL
+    let contains_illegal = illegal_numbers_check::ILLEGAL_NUMBERS_REGION_CACHED
         .with_cached(|numbers| numbers.iter().any(|num| body.contains(num)));
 
     if contains_illegal {

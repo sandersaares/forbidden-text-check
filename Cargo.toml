@@ -8,6 +8,7 @@ axum = "0.8.1"
 hyper = "1.6.0"
 hyper-util = { version = "0.1.10", features = ["tokio"] }
 region_cached = "0.0.6"
+region_local = "0.0.6"
 many_cpus = "0.0.5"
 num_cpus = "1.16.0"
 tokio = { version = "1.44.1", features = ["full"] }

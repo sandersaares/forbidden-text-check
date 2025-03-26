@@ -3,8 +3,8 @@ use hyper_util::rt::TokioIo;
 use hyper_util::service::TowerToHyperService;
 use many_cpus::ProcessorSet;
 use region_cached::RegionCachedExt;
+use region_local::RegionLocalExt;
 use std::net::SocketAddr;
-use std::sync::{Arc, Mutex};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc::{Receiver, Sender, channel};
 use tower::Service;
@@ -13,9 +13,6 @@ use tower::Service;
 // is listen for connections and pass them on to the real worker pool.
 #[tokio::main(worker_threads = 1)]
 async fn main() {
-    // Pre-warm the data set.
-    illegal_numbers_check::ILLEGAL_NUMBERS_REGION_CACHED.with_cached(|_| ());
-
     increase_ulimit();
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 1234));
@@ -24,27 +21,21 @@ async fn main() {
     let all_processors = ProcessorSet::all();
     let num_workers = ProcessorSet::all().len();
     println!("Starting {} worker threads", num_workers);
-    const WORKER_QUEUE_SIZE: usize = 4;
 
-    let (txs, rxs) = (0..num_workers)
-        .map(|_| channel(WORKER_QUEUE_SIZE))
-        .unzip::<_, _, Vec<_>, Vec<_>>();
+    let mut work_txs = Vec::with_capacity(num_workers);
 
-    // Each worker thread will pop one Receiver out of this vector, so it needs to be shared.
-    let rxs = Arc::new(Mutex::new(rxs));
+    for i in 0..num_workers {
+        const WORKER_QUEUE_SIZE: usize = 4;
 
-    // This method will execute the callback once for every processor,
-    // on a thread pinned to that specific processor.
-    all_processors.spawn_threads(move |_| {
-        let rx = {
-            let mut rxs = rxs.lock().unwrap();
-            rxs.pop().unwrap()
-        };
+        let (tx, rx) = channel(WORKER_QUEUE_SIZE);
+        work_txs.push(tx);
 
-        worker_entrypoint(rx);
-    });
+        // For each call, we spawn a thread that the OS is allowed to assign
+        // to any of the processors in the set to balance load among them.
+        all_processors.spawn_thread(move |_| worker_entrypoint(i, rx));
+    }
 
-    listener_entrypoint(addr, txs).await;
+    listener_entrypoint(addr, work_txs).await;
 }
 
 async fn listener_entrypoint(addr: SocketAddr, work_txs: Vec<Sender<TcpStream>>) {
@@ -61,7 +52,7 @@ async fn listener_entrypoint(addr: SocketAddr, work_txs: Vec<Sender<TcpStream>>)
     }
 }
 
-fn worker_entrypoint(mut rx: Receiver<TcpStream>) {
+fn worker_entrypoint(_worker_index: usize, mut rx: Receiver<TcpStream>) {
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
@@ -96,8 +87,8 @@ fn worker_entrypoint(mut rx: Receiver<TcpStream>) {
 
 // Handler for the /check endpoint
 async fn check_number(body: String) -> impl IntoResponse {
-    let contains_illegal = illegal_numbers_check::ILLEGAL_NUMBERS_REGION_CACHED
-        .with_cached(|numbers| numbers.iter().any(|num| body.contains(num)));
+    let contains_illegal = illegal_numbers_check::ILLEGAL_NUMBERS_REGION_LOCAL
+        .with_local(|numbers| numbers.iter().any(|num| body.contains(num)));
 
     if contains_illegal {
         (StatusCode::OK, "true")

@@ -420,6 +420,7 @@ dependencies = [
  "nix",
  "num_cpus",
  "region_cached",
+ "region_local",
  "tokio",
  "tower",
 ]
@@ -912,6 +913,18 @@ dependencies = [
  "linked",
  "many_cpus",
  "rsevents",
+ "simple-mermaid",
+]
+
+[[package]]
+name = "region_local"
+version = "0.0.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3b812771a0bc4da53f8d8e6920a707ee115aeecdba773de3ad0197d3ee369128"
+dependencies = [
+ "arc-swap",
+ "linked",
+ "many_cpus",
  "simple-mermaid",
 ]
 

@@ -1,11 +1,16 @@
 use std::sync::LazyLock;
 
 use region_cached::region_cached;
+use region_local::region_local;
 
 pub static ILLEGAL_NUMBERS: LazyLock<Vec<String>> = LazyLock::new(generate_illegal_numbers);
 
 region_cached! {
-    pub static ILLEGAL_NUMBERS_REGIONAL: Vec<String> = generate_illegal_numbers();
+    pub static ILLEGAL_NUMBERS_REGION_CACHED: Vec<String> = generate_illegal_numbers();
+}
+
+region_local! {
+    pub static ILLEGAL_NUMBERS_REGION_LOCAL: Vec<String> = generate_illegal_numbers();
 }
 
 fn generate_illegal_numbers() -> Vec<String> {
