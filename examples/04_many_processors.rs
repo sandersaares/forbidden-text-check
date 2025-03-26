@@ -75,9 +75,10 @@ fn worker_entrypoint(_worker_index: usize, mut rx: Receiver<TcpStream>) {
 
                     let http = hyper::server::conn::http1::Builder::new();
 
-                    http.serve_connection(TokioIo::new(stream), hyper_service)
-                        .await
-                        .unwrap();
+                    // We do not care if it succeeds or fails, let the benchmark runner handle it.
+                    _ = http
+                        .serve_connection(TokioIo::new(stream), hyper_service)
+                        .await;
                 }
             });
         }
