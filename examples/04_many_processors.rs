@@ -1,6 +1,7 @@
 use axum::{Router, http::StatusCode, response::IntoResponse, routing::post};
 use hyper_util::rt::TokioIo;
 use hyper_util::service::TowerToHyperService;
+use many_cpus::ProcessorSet;
 use std::net::SocketAddr;
 use std::thread;
 use tokio::net::{TcpListener, TcpStream};
@@ -19,7 +20,7 @@ async fn main() {
     let addr = SocketAddr::from(([0, 0, 0, 0], 1234));
     println!("Server starting on http://{}", addr);
 
-    let num_workers = 176;
+    let num_workers = ProcessorSet::all().len();
     println!("Starting {} worker threads", num_workers);
 
     let mut work_txs = Vec::with_capacity(num_workers);
