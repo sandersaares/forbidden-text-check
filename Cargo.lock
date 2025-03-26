@@ -509,9 +509,9 @@ checksum = "c19937216e9d3aa9956d9bb8dfc0b0c8beb6058fc4f7a4dc4d850edf86a237d6"
 
 [[package]]
 name = "linked"
-version = "0.0.4"
+version = "0.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68ac7cebe330e73dedaae90084d16eb02f885f322e546998659f178787039672"
+checksum = "0fa18c04351039d00a40b56b1a5ce239fe5b5e3f4b8e6ec9860c312664548875"
 dependencies = [
  "hash_hasher",
  "linked_macros",
@@ -522,18 +522,18 @@ dependencies = [
 
 [[package]]
 name = "linked_macros"
-version = "0.0.3"
+version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0bd968c48ba2a730631d679ff1cc876953a14d6f73f58eaa80435f5a4d0d1b79"
+checksum = "f3c90c208035744c7849bb5b16d76c283df3a44408711f21e89c8c802c3665b2"
 dependencies = [
  "linked_macros_impl",
 ]
 
 [[package]]
 name = "linked_macros_impl"
-version = "0.0.3"
+version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3e5971bea1922c93633ed133cf563fe981e1582de04821180aa70f4ed6537578"
+checksum = "436dd1e1331a7716ea581a26ca19edb496ac031da6bc9140430aa0b6444e921c"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -558,9 +558,9 @@ checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
 
 [[package]]
 name = "many_cpus"
-version = "0.0.4"
+version = "0.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "14829934133bb084f32e0b0c855d1ca330957c9aea964258e18ab7cd155a0d8b"
+checksum = "5b2f98e2c1a1c20b7c5a089471edbaf1345e8172b41973570010a884785dc8ad"
 dependencies = [
  "cpulist",
  "derive_more",
@@ -903,9 +903,9 @@ dependencies = [
 
 [[package]]
 name = "region_cached"
-version = "0.0.5"
+version = "0.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5cddf6a2adeb6b7fe0988f3509ea0830fb35d9b45ff51c5e5d6c496188df3f3"
+checksum = "71dd2be1e7243c40f0e5fbf5788dcd614ce6845a2dbfbacbcb385b44c170a1a4"
 dependencies = [
  "arc-swap",
  "derive_more",
