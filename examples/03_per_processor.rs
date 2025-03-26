@@ -51,8 +51,7 @@ async fn listener_entrypoint(addr: SocketAddr, work_txs: Vec<Sender<TcpStream>>)
 }
 
 fn worker_entrypoint(_worker_index: usize, mut rx: Receiver<TcpStream>) {
-    let runtime = tokio::runtime::Builder::new_multi_thread()
-        .worker_threads(1)
+    let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
         .unwrap();
