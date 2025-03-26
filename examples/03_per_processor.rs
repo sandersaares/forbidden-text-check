@@ -14,6 +14,8 @@ async fn main() {
     // Pre-warm the data set.
     let _ = illegal_numbers_check::ILLEGAL_NUMBERS.len();
 
+    increase_ulimit();
+
     let addr = SocketAddr::from(([0, 0, 0, 0], 1234));
     println!("Server starting on http://{}", addr);
 
@@ -91,4 +93,11 @@ async fn check_number(body: String) -> impl IntoResponse {
     } else {
         (StatusCode::OK, "false")
     }
+}
+
+/// On Linux, we can easily run out of file descriptors that we need for our sockets, so
+/// we need to increase the ulimit. This is a no-op on Windows as Windows has no such limitations.
+fn increase_ulimit() {
+    #[cfg(unix)]
+    nix::sys::resource::setrlimit(nix::sys::resource::Resource::RLIMIT_NOFILE, 8192, 8192).unwrap();
 }
