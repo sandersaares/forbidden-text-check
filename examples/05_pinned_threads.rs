@@ -2,7 +2,6 @@ use axum::{Router, http::StatusCode, response::IntoResponse, routing::post};
 use hyper_util::rt::TokioIo;
 use hyper_util::service::TowerToHyperService;
 use many_cpus::ProcessorSet;
-use region_cached::RegionCachedExt;
 use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 use tokio::net::{TcpListener, TcpStream};
