@@ -1,3 +1,8 @@
+//! We keep the core functionality of generating/accessing the data set and searching it for
+//! matches in this module, so it is compiled as a separate unit from the examples/benches.
+//! This helps eliminate accidental compiler optimizations that risk randomly skewing the
+//! results of our hot loop simply because something unrelated changed in the example .rs file.
+
 use std::sync::LazyLock;
 
 use region_cached::{RegionCachedExt, region_cached};
