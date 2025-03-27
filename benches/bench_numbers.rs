@@ -1,3 +1,5 @@
+use std::hint::black_box;
+
 use criterion::{Criterion, criterion_group, criterion_main};
 use illegal_numbers_check::{
     ILLEGAL_NUMBERS, ILLEGAL_NUMBERS_REGION_CACHED, ILLEGAL_NUMBERS_REGION_LOCAL,
@@ -12,6 +14,11 @@ const PAYLOAD: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
 
 fn entrypoint(c: &mut Criterion) {
     let mut g = c.benchmark_group("number_crunching");
+
+    // Touch each of the data sets to ensure they are loaded into memory.
+    black_box(ILLEGAL_NUMBERS.len());
+    black_box(ILLEGAL_NUMBERS_REGION_CACHED.with_cached(|numbers| numbers.len()));
+    black_box(ILLEGAL_NUMBERS_REGION_LOCAL.with_local(|numbers| numbers.len()));
 
     // The data set is huge, so let's not be greedy.
     g.sample_size(10);
