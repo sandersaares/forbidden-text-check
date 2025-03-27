@@ -4,9 +4,6 @@ use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() {
-    // Pre-warm the data set so the first request does not get penalized.
-    _ = ILLEGAL_NUMBERS.len();
-
     let app = Router::new().route("/check", post(check_number));
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 1234));

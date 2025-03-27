@@ -13,9 +13,6 @@ use tower::Service;
 // is listen for connections and pass them on to the real worker pool.
 #[tokio::main(worker_threads = 1)]
 async fn main() {
-    // Pre-warm the data set.
-    illegal_numbers_check::ILLEGAL_NUMBERS_REGION_CACHED.with_cached(|_| ());
-
     increase_ulimit();
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 1234));
