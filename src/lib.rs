@@ -15,12 +15,12 @@ region_local! {
 
 fn generate_illegal_numbers() -> Vec<String> {
     const ILLEGAL_NUMBER_START: usize = 5_000_000;
-    const ILLEGAL_NUMBER_COUNT: usize = 10_000_000;
+    const ILLEGAL_NUMBER_COUNT: usize = 25_000_000;
 
     let mut numbers = Vec::with_capacity(ILLEGAL_NUMBER_COUNT);
 
-    // 10M numbers is something like 70 MB of characters alone (plus String overhead etc).
-    // With overhead included, it comes to around 390 MB (that is some big overhead).
+    // This will be some hundreds of megabytes, which should be enough to not trivially fit in
+    // even large L3 caches (though server systems can be rather creative these days).
     //
     // For our purposes, we just want to use a large data set for easy demonstration of
     // large data set effects (which in real world apps might be more "many smaller data sets"
