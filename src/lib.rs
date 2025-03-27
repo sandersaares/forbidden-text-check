@@ -1,7 +1,7 @@
 use std::sync::LazyLock;
 
-use region_cached::region_cached;
-use region_local::region_local;
+use region_cached::{RegionCachedExt, region_cached};
+use region_local::{RegionLocalExt, region_local};
 
 pub static ILLEGAL_NUMBERS: LazyLock<Vec<String>> = LazyLock::new(generate_illegal_numbers);
 
@@ -30,4 +30,20 @@ fn generate_illegal_numbers() -> Vec<String> {
     }
 
     numbers
+}
+
+pub fn contains_illegal_numbers(payload: &str) -> bool {
+    ILLEGAL_NUMBERS
+        .iter()
+        .any(|number| payload.contains(number))
+}
+
+pub fn contains_illegal_numbers_region_cached(payload: &str) -> bool {
+    ILLEGAL_NUMBERS_REGION_CACHED
+        .with_cached(|numbers| numbers.iter().any(|number| payload.contains(number)))
+}
+
+pub fn contains_illegal_numbers_region_local(payload: &str) -> bool {
+    ILLEGAL_NUMBERS_REGION_LOCAL
+        .with_local(|numbers| numbers.iter().any(|number| payload.contains(number)))
 }

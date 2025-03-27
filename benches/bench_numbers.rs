@@ -3,6 +3,8 @@ use std::hint::black_box;
 use criterion::{Criterion, criterion_group, criterion_main};
 use illegal_numbers_check::{
     ILLEGAL_NUMBERS, ILLEGAL_NUMBERS_REGION_CACHED, ILLEGAL_NUMBERS_REGION_LOCAL,
+    contains_illegal_numbers, contains_illegal_numbers_region_cached,
+    contains_illegal_numbers_region_local,
 };
 use region_cached::RegionCachedExt;
 use region_local::RegionLocalExt;
@@ -24,25 +26,15 @@ fn entrypoint(c: &mut Criterion) {
     g.sample_size(10);
 
     g.bench_function("static", |b| {
-        b.iter(|| {
-            ILLEGAL_NUMBERS
-                .iter()
-                .any(|number| PAYLOAD.contains(number))
-        });
+        b.iter(|| contains_illegal_numbers(PAYLOAD));
     });
 
     g.bench_function("region_cached", |b| {
-        b.iter(|| {
-            ILLEGAL_NUMBERS_REGION_CACHED
-                .with_cached(|numbers| numbers.iter().any(|number| PAYLOAD.contains(number)))
-        });
+        b.iter(|| contains_illegal_numbers_region_cached(PAYLOAD));
     });
 
     g.bench_function("region_local", |b| {
-        b.iter(|| {
-            ILLEGAL_NUMBERS_REGION_LOCAL
-                .with_local(|numbers| numbers.iter().any(|number| PAYLOAD.contains(number)))
-        });
+        b.iter(|| contains_illegal_numbers_region_local(PAYLOAD));
     });
 
     g.finish();

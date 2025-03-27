@@ -3,17 +3,13 @@
 
 use std::hint::black_box;
 
-use illegal_numbers_check::ILLEGAL_NUMBERS;
+use illegal_numbers_check::contains_illegal_numbers;
 
 const ITERATION_COUNT: u64 = 10;
 
 fn main() {
     for _ in 0..ITERATION_COUNT {
-        black_box(
-            ILLEGAL_NUMBERS
-                .iter()
-                .any(|number| PAYLOAD.contains(number)),
-        );
+        black_box(contains_illegal_numbers(PAYLOAD));
     }
 }
 
