@@ -150,9 +150,9 @@ checksum = "0570650661aa447e7335f1d5e4f499d8e58796e617bedc9267d971e51c8b49d4"
 
 [[package]]
 name = "cpulist"
-version = "0.0.2"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58bcda18ea098984d952dd942b14fc5f9fdd674d9b90c093b16fed223a7f3334"
+checksum = "df297fbb84502a78581dd3d2d947e93739041452022eb5fa0b211688ca9127d1"
 dependencies = [
  "include-doc",
  "itertools 0.14.0",
@@ -240,9 +240,9 @@ checksum = "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2"
 
 [[package]]
 name = "folo_ffi"
-version = "0.0.1"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e35be17a6a32912919a0614dd351ce2412c861afa57cae7921c156ad1ca95516"
+checksum = "7f440a74b7d461fd25b736924d3a1546e27d6b4c132a4009b129e5a7c650d322"
 
 [[package]]
 name = "form_urlencoded"
@@ -510,25 +510,12 @@ checksum = "c19937216e9d3aa9956d9bb8dfc0b0c8beb6058fc4f7a4dc4d850edf86a237d6"
 
 [[package]]
 name = "linked"
-version = "0.0.5"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fa18c04351039d00a40b56b1a5ce239fe5b5e3f4b8e6ec9860c312664548875"
+checksum = "b2db3a8ed457ff4cd9e4a8e9fd308863cf2c278152c6ee5c0dd36273e98734c7"
 dependencies = [
  "hash_hasher",
- "linked_macros 0.0.4",
- "negative-impl",
- "paste",
- "simple-mermaid",
-]
-
-[[package]]
-name = "linked"
-version = "0.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09a98bdb934f5e1e53912f1260d5933e5f7ce48bf80fb09dcabe47bd59f2e22e"
-dependencies = [
- "hash_hasher",
- "linked_macros 0.0.5",
+ "linked_macros",
  "negative-impl",
  "paste",
  "simple-mermaid",
@@ -536,38 +523,18 @@ dependencies = [
 
 [[package]]
 name = "linked_macros"
-version = "0.0.4"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3c90c208035744c7849bb5b16d76c283df3a44408711f21e89c8c802c3665b2"
+checksum = "7d4dda1dcc86db305e178c9048e6bb24fbca3ef979ac857b02a72de866dc5b65"
 dependencies = [
- "linked_macros_impl 0.0.4",
-]
-
-[[package]]
-name = "linked_macros"
-version = "0.0.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4e7a82f54d3955c57313608c650235b76b7c8ea60d93e1a5b26f3128955e5254"
-dependencies = [
- "linked_macros_impl 0.0.5",
+ "linked_macros_impl",
 ]
 
 [[package]]
 name = "linked_macros_impl"
-version = "0.0.4"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "436dd1e1331a7716ea581a26ca19edb496ac031da6bc9140430aa0b6444e921c"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "linked_macros_impl"
-version = "0.0.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8da888b05c97409771f5d9ed6b7e4cf6a5a10c785db04ecae10680650de174ba"
+checksum = "3066f2263fc14f23208539c0ca9b967db160b3917b19e1d5bfc38b1f18d592d0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -592,9 +559,9 @@ checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
 
 [[package]]
 name = "many_cpus"
-version = "0.0.5"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b2f98e2c1a1c20b7c5a089471edbaf1345e8172b41973570010a884785dc8ad"
+checksum = "e4fe3605bab41bae2ddc5311d9608255607cbdc0c53c2baefce609e4019ace5a"
 dependencies = [
  "cpulist",
  "derive_more",
@@ -937,13 +904,13 @@ dependencies = [
 
 [[package]]
 name = "region_cached"
-version = "0.0.6"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "71dd2be1e7243c40f0e5fbf5788dcd614ce6845a2dbfbacbcb385b44c170a1a4"
+checksum = "3f736d0b7d2aebfc2a7e85cf7693d36edad970b5aa4ebda9a2aee263550fae13"
 dependencies = [
  "arc-swap",
  "derive_more",
- "linked 0.0.5",
+ "linked",
  "many_cpus",
  "rsevents",
  "simple-mermaid",
@@ -951,13 +918,15 @@ dependencies = [
 
 [[package]]
 name = "region_local"
-version = "0.0.7"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f90f23a532f5ffae73d5fb5ff5b61e94ae9370de9e994dab3f4774f2c81c5e39"
+checksum = "61757e7f563972bf54b2a88be043017f5a4a26cf30b428646a2a60e04a37de7e"
 dependencies = [
  "arc-swap",
- "linked 0.0.6",
+ "derive_more",
+ "linked",
  "many_cpus",
+ "rsevents",
  "simple-mermaid",
 ]
 
