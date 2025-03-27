@@ -17,6 +17,14 @@ tower = "0.5.2"
 [target.'cfg(unix)'.dependencies]
 nix = { version = "0.29.0", features = ["resource"] }
 
+[dev-dependencies]
+# We use the Git version because the crates.io one lacks some important fixes.
+criterion = { git = "https://github.com/bheisler/criterion.rs.git" }
+
 [profile.release]
 # This ensures we have meaningful stack traces when profiling.
 debug = "line-tables-only"
+
+[[bench]]
+name = "bench_numbers"
+harness = false
