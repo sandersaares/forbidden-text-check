@@ -5,12 +5,14 @@ edition = "2024"
 
 [dependencies]
 axum = "0.8.1"
+frozen-collections = "0.4.0"
 hyper = "1.6.0"
 hyper-util = { version = "0.1.10", features = ["tokio"] }
 region_cached = "0.1.1"
 region_local = "0.1.1"
 many_cpus = "0.1.1"
 num_cpus = "1.16.0"
+rand = "0.9.0"
 tokio = { version = "1.44.1", features = ["full"] }
 tower = "0.5.2"
 

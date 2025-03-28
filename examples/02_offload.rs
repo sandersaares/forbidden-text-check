@@ -1,5 +1,5 @@
 use axum::{Router, http::StatusCode, response::IntoResponse, routing::post};
-use forbidden_text_check::contains_forbidden_text_static;
+use forbidden_text_check::is_any_forbidden_text_static;
 use std::net::SocketAddr;
 use tokio::spawn;
 
@@ -24,7 +24,7 @@ async fn main() {
 }
 
 async fn check(body: String) -> impl IntoResponse {
-    if contains_forbidden_text_static(&body) {
+    if is_any_forbidden_text_static(&body) {
         (StatusCode::OK, "true")
     } else {
         (StatusCode::OK, "false")

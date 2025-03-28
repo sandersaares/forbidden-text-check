@@ -5,64 +5,82 @@
 
 use std::sync::LazyLock;
 
+use frozen_collections::{FzHashMap, MapQuery};
 use region_cached::{RegionCachedExt, region_cached};
 use region_local::{RegionLocalExt, region_local};
 
-pub static FORBIDDEN_TEXTS: LazyLock<Vec<String>> = LazyLock::new(generate_forbidden_texts);
+pub static FORBIDDEN_TEXTS: LazyLock<FzHashMap<String, bool>> =
+    LazyLock::new(generate_forbidden_texts);
 
 region_cached! {
-    pub static FORBIDDEN_TEXTS_REGION_CACHED: Vec<String> = generate_forbidden_texts();
+    pub static FORBIDDEN_TEXTS_REGION_CACHED: FzHashMap<String, bool> = generate_forbidden_texts();
 }
 
 region_local! {
-    pub static FORBIDDEN_TEXTS_REGION_LOCAL: Vec<String> = generate_forbidden_texts();
+    pub static FORBIDDEN_TEXTS_REGION_LOCAL: FzHashMap<String, bool> = generate_forbidden_texts();
 }
 
-fn generate_forbidden_texts() -> Vec<String> {
-    const ITEM_COUNT: usize = 1_000_000;
+// For the sake of example convenience, our forbidden texts are titled
+// with numbers from zero to ITEM_COUNT. This is a few GB of data.
+const ITEM_COUNT: usize = 20_000_000;
 
-    let mut texts = Vec::with_capacity(ITEM_COUNT);
+/// Generates an example data set of forbidden texts, a map of text title to bool (is it forbidden).
+fn generate_forbidden_texts() -> FzHashMap<String, bool> {
+    let mut raw_data = Vec::with_capacity(ITEM_COUNT);
 
-    // This will be in the hundreds of megabytes, which should be enough to not trivially fit in
-    // even large L3 caches (though server systems can be rather creative these days).
-    //
-    // For our purposes, we just want to use a large data set for easy demonstration of
-    // large data set effects (which in real world apps might be more "many smaller data sets"
-    // that total a large amount of data).
-    let mut next = u64::MAX;
-    let stop = u64::MAX - ITEM_COUNT as u64;
-
-    while next != stop {
-        const MULTIPLIER: usize = 16;
-        // Concatenate the number to itself many times, so we have "texts" that are realistically
-        // long and unique, without having to bother with generating actual random data.
-        let one = next.to_string();
-
-        let mut s = String::with_capacity(one.len() * MULTIPLIER);
-        for _ in 0..MULTIPLIER {
-            s.push_str(&one);
-        }
-
-        texts.push(s);
-
-        next -= 1;
+    for i in 0..ITEM_COUNT {
+        let key = i.to_string();
+        let value = matches!(i % 2, 0);
+        raw_data.push((key, value));
     }
 
-    texts
+    FzHashMap::new(raw_data)
 }
 
-pub fn contains_forbidden_text_static(haystack: &str) -> bool {
-    FORBIDDEN_TEXTS
-        .iter()
-        .any(|needle| haystack.contains(needle))
+pub fn is_any_forbidden_text_static(titles: &str) -> bool {
+    for title in titles.split(',') {
+        if *FORBIDDEN_TEXTS.get(title).unwrap_or(&false) {
+            return true;
+        }
+    }
+
+    false
 }
 
-pub fn contains_forbidden_text_region_cached(haystack: &str) -> bool {
-    FORBIDDEN_TEXTS_REGION_CACHED
-        .with_cached(|needles| needles.iter().any(|needle| haystack.contains(needle)))
+pub fn is_any_forbidden_text_region_cached(titles: &str) -> bool {
+    FORBIDDEN_TEXTS_REGION_CACHED.with_cached(|texts| {
+        for title in titles.split(',') {
+            if *texts.get(title).unwrap_or(&false) {
+                return true;
+            }
+        }
+
+        false
+    })
 }
 
-pub fn contains_forbidden_text_region_local(haystack: &str) -> bool {
-    FORBIDDEN_TEXTS_REGION_LOCAL
-        .with_local(|needles| needles.iter().any(|needle| haystack.contains(needle)))
+pub fn is_any_forbidden_text_region_local(titles: &str) -> bool {
+    FORBIDDEN_TEXTS_REGION_LOCAL.with_local(|texts| {
+        for title in titles.split(',') {
+            if *texts.get(title).unwrap_or(&false) {
+                return true;
+            }
+        }
+
+        false
+    })
+}
+
+fn get_random_title() -> String {
+    rand::random_range(0..ITEM_COUNT).to_string()
+}
+
+// To make a lot of work for each HTTP request, as each individual lookup is fast and easy.
+const BATCH_SIZE: usize = 10_000;
+
+pub fn get_random_titles() -> String {
+    (0..BATCH_SIZE)
+        .map(|_| get_random_title())
+        .collect::<Vec<_>>()
+        .join(",")
 }
