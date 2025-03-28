@@ -386,6 +386,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f440a74b7d461fd25b736924d3a1546e27d6b4c132a4009b129e5a7c650d322"
 
 [[package]]
+name = "forbidden-text-check"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "criterion",
+ "hyper",
+ "hyper-util",
+ "many_cpus",
+ "nix",
+ "num_cpus",
+ "region_cached",
+ "region_local",
+ "tokio",
+ "tower",
+]
+
+[[package]]
 name = "form_urlencoded"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -561,23 +578,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "illegal-numbers-check"
-version = "0.1.0"
-dependencies = [
- "axum",
- "criterion",
- "hyper",
- "hyper-util",
- "many_cpus",
- "nix",
- "num_cpus",
- "region_cached",
- "region_local",
- "tokio",
- "tower",
-]
-
-[[package]]
 name = "include-doc"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -681,9 +681,9 @@ checksum = "c19937216e9d3aa9956d9bb8dfc0b0c8beb6058fc4f7a4dc4d850edf86a237d6"
 
 [[package]]
 name = "linked"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b2db3a8ed457ff4cd9e4a8e9fd308863cf2c278152c6ee5c0dd36273e98734c7"
+checksum = "dcc81b0f933c22fb94b7697cc58859e2a35f69e9d8ba50460b4bbb1cb565bfa5"
 dependencies = [
  "hash_hasher",
  "linked_macros",
@@ -694,18 +694,18 @@ dependencies = [
 
 [[package]]
 name = "linked_macros"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7d4dda1dcc86db305e178c9048e6bb24fbca3ef979ac857b02a72de866dc5b65"
+checksum = "fc454562b63a57d266eb0c40b0dc35a1613b9baa98111dcd328de12e5bb4c21c"
 dependencies = [
  "linked_macros_impl",
 ]
 
 [[package]]
 name = "linked_macros_impl"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3066f2263fc14f23208539c0ca9b967db160b3917b19e1d5bfc38b1f18d592d0"
+checksum = "65596af18b82b8538bc88f5490f5366a3e20e0fdece98666477d6507699691a1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -730,9 +730,9 @@ checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
 
 [[package]]
 name = "many_cpus"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e4fe3605bab41bae2ddc5311d9608255607cbdc0c53c2baefce609e4019ace5a"
+checksum = "ebe2c4bf0fae49e5a834c3d44a1c4812f4d5502a2f539c5f4669e1c470122553"
 dependencies = [
  "cpulist",
  "derive_more",
@@ -1167,9 +1167,9 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 
 [[package]]
 name = "region_cached"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f736d0b7d2aebfc2a7e85cf7693d36edad970b5aa4ebda9a2aee263550fae13"
+checksum = "d35fa6f813da881018d7da27e912c4ce1a6800d36479bf6769d9d96d202eef3f"
 dependencies = [
  "arc-swap",
  "derive_more",
@@ -1181,9 +1181,9 @@ dependencies = [
 
 [[package]]
 name = "region_local"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61757e7f563972bf54b2a88be043017f5a4a26cf30b428646a2a60e04a37de7e"
+checksum = "ebcc493da6d5a90be23de7622de14a8639bfb6adfcd1f39afaa417175b8e1712"
 dependencies = [
  "arc-swap",
  "derive_more",

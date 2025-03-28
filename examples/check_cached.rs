@@ -1,15 +1,18 @@
-//! For easy profiling and comparison of the different ways to do the number crunching.
-//! Ideally this makes no difference (because everything is happening on the one thread).
+//! For easy profiling and comparison of the different ways to do the checking.
+//!
+//! Ideally the different "check_*" example variants have no differences because
+//! all the action is happening on the same thread, so the optimization do not help.
 
 use std::hint::black_box;
 
-use illegal_numbers_check::contains_illegal_numbers;
+use forbidden_text_check::contains_forbidden_text_region_cached;
 
 const ITERATION_COUNT: u64 = 10;
 
 fn main() {
     for _ in 0..ITERATION_COUNT {
-        black_box(contains_illegal_numbers(PAYLOAD));
+        // The black box ensures that the operation is not optimized away due to unused result.
+        black_box(contains_forbidden_text_region_cached(PAYLOAD));
     }
 }
 

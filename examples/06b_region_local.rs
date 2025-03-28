@@ -1,8 +1,8 @@
 use axum::{Router, http::StatusCode, response::IntoResponse, routing::post};
+use forbidden_text_check::contains_forbidden_text_region_local;
 use hyper_util::rt::TokioIo;
 use hyper_util::service::TowerToHyperService;
 use many_cpus::ProcessorSet;
-use region_local::RegionLocalExt;
 use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 use tokio::net::{TcpListener, TcpStream};
@@ -21,6 +21,7 @@ async fn main() {
     let all_processors = ProcessorSet::all();
     let num_workers = ProcessorSet::all().len();
     println!("Starting {} worker threads", num_workers);
+
     const WORKER_QUEUE_SIZE: usize = 4;
 
     let (txs, rxs) = (0..num_workers)
@@ -30,8 +31,8 @@ async fn main() {
     // Each worker thread will pop one Receiver out of this vector, so it needs to be shared.
     let rxs = Arc::new(Mutex::new(rxs));
 
-    // This method will execute the callback once for every processor,
-    // on a thread pinned to that specific processor.
+    // This method will create one thread per processor and execute the callback on each of them.
+    // Every thread will be pinned to a specific processor, so the OS will not move them around.
     all_processors.spawn_threads(move |_| {
         let rx = {
             let mut rxs = rxs.lock().unwrap();
@@ -51,14 +52,15 @@ async fn listener_entrypoint(addr: SocketAddr, work_txs: Vec<Sender<TcpStream>>)
 
     loop {
         let (stream, _) = listener.accept().await.unwrap();
-
         work_txs[next_worker].send(stream).await.unwrap();
-
         next_worker = (next_worker + 1) % work_txs.len();
     }
 }
 
 fn worker_entrypoint(mut rx: Receiver<TcpStream>) {
+    // Every worker thread gets its own Tokio runtime, which means all the tasks of this
+    // thread remain in this thread - there is no implicit travel between threads and
+    // multithreaded activity only occurs when explicitly intended by the service author.
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
@@ -66,12 +68,13 @@ fn worker_entrypoint(mut rx: Receiver<TcpStream>) {
 
     runtime.block_on(async move {
         // We build a new Axum app on every worker, ensuring that workers are independent.
-        let app = Router::new().route("/check", post(check_number));
+        let app = Router::new().route("/check", post(check));
         let service_factory = app.into_make_service_with_connect_info::<SocketAddr>();
 
         while let Some(stream) = rx.recv().await {
             let peer_addr = stream.peer_addr().unwrap();
 
+            // For each connection, we spawn a new task to handle it.
             tokio::spawn({
                 let mut service_factory = service_factory.clone();
 
@@ -91,12 +94,8 @@ fn worker_entrypoint(mut rx: Receiver<TcpStream>) {
     });
 }
 
-// Handler for the /check endpoint
-async fn check_number(body: String) -> impl IntoResponse {
-    let contains_illegal = illegal_numbers_check::ILLEGAL_NUMBERS_REGION_LOCAL
-        .with_local(|numbers| numbers.iter().any(|num| body.contains(num)));
-
-    if contains_illegal {
+async fn check(body: String) -> impl IntoResponse {
+    if contains_forbidden_text_region_local(&body) {
         (StatusCode::OK, "true")
     } else {
         (StatusCode::OK, "false")

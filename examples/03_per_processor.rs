@@ -1,4 +1,5 @@
 use axum::{Router, http::StatusCode, response::IntoResponse, routing::post};
+use forbidden_text_check::contains_forbidden_text_static;
 use hyper_util::rt::TokioIo;
 use hyper_util::service::TowerToHyperService;
 use std::net::SocketAddr;
@@ -55,12 +56,13 @@ fn worker_entrypoint(_worker_index: usize, mut rx: Receiver<TcpStream>) {
 
     runtime.block_on(async move {
         // We build a new Axum app on every worker, ensuring that workers are independent.
-        let app = Router::new().route("/check", post(check_number));
+        let app = Router::new().route("/check", post(check));
         let service_factory = app.into_make_service_with_connect_info::<SocketAddr>();
 
         while let Some(stream) = rx.recv().await {
             let peer_addr = stream.peer_addr().unwrap();
 
+            // For each connection, we spawn a new task to handle it.
             tokio::spawn({
                 let mut service_factory = service_factory.clone();
 
@@ -70,7 +72,7 @@ fn worker_entrypoint(_worker_index: usize, mut rx: Receiver<TcpStream>) {
 
                     let http = hyper::server::conn::http1::Builder::new();
 
-                    // We do not care if it succeeds or fails, let the benchmark runner handle it.
+                    // We do not care if the request handling succeeds or fails, so ignore result.
                     _ = http
                         .serve_connection(TokioIo::new(stream), hyper_service)
                         .await;
@@ -80,12 +82,8 @@ fn worker_entrypoint(_worker_index: usize, mut rx: Receiver<TcpStream>) {
     });
 }
 
-// Handler for the /check endpoint
-async fn check_number(body: String) -> impl IntoResponse {
-    let contains_illegal = illegal_numbers_check::ILLEGAL_NUMBERS
-        .iter()
-        .any(|num| body.contains(num));
-    if contains_illegal {
+async fn check(body: String) -> impl IntoResponse {
+    if contains_forbidden_text_static(&body) {
         (StatusCode::OK, "true")
     } else {
         (StatusCode::OK, "false")

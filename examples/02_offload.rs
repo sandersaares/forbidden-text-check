@@ -1,12 +1,15 @@
 use axum::{Router, http::StatusCode, response::IntoResponse, routing::post};
-use illegal_numbers_check::ILLEGAL_NUMBERS;
+use forbidden_text_check::contains_forbidden_text_static;
 use std::net::SocketAddr;
 use tokio::spawn;
 
 #[tokio::main]
 async fn main() {
+    // The main() entrypoint thread is special and doing work directly in there is
+    // less efficient in some scenarios. Spawning a new task will move the work off to
+    // a worker thread, where it may be executed more efficiently.
     spawn(async move {
-        let app = Router::new().route("/check", post(check_number));
+        let app = Router::new().route("/check", post(check));
 
         let addr = SocketAddr::from(([0, 0, 0, 0], 1234));
         println!("Server running on http://{}", addr);
@@ -20,10 +23,8 @@ async fn main() {
     .unwrap();
 }
 
-async fn check_number(body: String) -> impl IntoResponse {
-    let contains_illegal = ILLEGAL_NUMBERS.iter().any(|num| body.contains(num));
-
-    if contains_illegal {
+async fn check(body: String) -> impl IntoResponse {
+    if contains_forbidden_text_static(&body) {
         (StatusCode::OK, "true")
     } else {
         (StatusCode::OK, "false")

@@ -8,47 +8,61 @@ use std::sync::LazyLock;
 use region_cached::{RegionCachedExt, region_cached};
 use region_local::{RegionLocalExt, region_local};
 
-pub static ILLEGAL_NUMBERS: LazyLock<Vec<String>> = LazyLock::new(generate_illegal_numbers);
+pub static FORBIDDEN_TEXTS: LazyLock<Vec<String>> = LazyLock::new(generate_forbidden_texts);
 
 region_cached! {
-    pub static ILLEGAL_NUMBERS_REGION_CACHED: Vec<String> = generate_illegal_numbers();
+    pub static FORBIDDEN_TEXTS_REGION_CACHED: Vec<String> = generate_forbidden_texts();
 }
 
 region_local! {
-    pub static ILLEGAL_NUMBERS_REGION_LOCAL: Vec<String> = generate_illegal_numbers();
+    pub static FORBIDDEN_TEXTS_REGION_LOCAL: Vec<String> = generate_forbidden_texts();
 }
 
-fn generate_illegal_numbers() -> Vec<String> {
-    const ILLEGAL_NUMBER_START: usize = 5_000_000;
-    const ILLEGAL_NUMBER_COUNT: usize = 25_000_000;
+fn generate_forbidden_texts() -> Vec<String> {
+    const ITEM_COUNT: usize = 1_000_000;
 
-    let mut numbers = Vec::with_capacity(ILLEGAL_NUMBER_COUNT);
+    let mut texts = Vec::with_capacity(ITEM_COUNT);
 
-    // This will be some hundreds of megabytes, which should be enough to not trivially fit in
+    // This will be in the hundreds of megabytes, which should be enough to not trivially fit in
     // even large L3 caches (though server systems can be rather creative these days).
     //
     // For our purposes, we just want to use a large data set for easy demonstration of
     // large data set effects (which in real world apps might be more "many smaller data sets"
     // that total a large amount of data).
-    for i in ILLEGAL_NUMBER_START..(ILLEGAL_NUMBER_START + ILLEGAL_NUMBER_COUNT) {
-        numbers.push(i.to_string());
+    let mut next = u64::MAX;
+    let stop = u64::MAX - ITEM_COUNT as u64;
+
+    while next != stop {
+        const MULTIPLIER: usize = 16;
+        // Concatenate the number to itself many times, so we have "texts" that are realistically
+        // long and unique, without having to bother with generating actual random data.
+        let one = next.to_string();
+
+        let mut s = String::with_capacity(one.len() * MULTIPLIER);
+        for _ in 0..MULTIPLIER {
+            s.push_str(&one);
+        }
+
+        texts.push(s);
+
+        next -= 1;
     }
 
-    numbers
+    texts
 }
 
-pub fn contains_illegal_numbers(payload: &str) -> bool {
-    ILLEGAL_NUMBERS
+pub fn contains_forbidden_text_static(haystack: &str) -> bool {
+    FORBIDDEN_TEXTS
         .iter()
-        .any(|number| payload.contains(number))
+        .any(|needle| haystack.contains(needle))
 }
 
-pub fn contains_illegal_numbers_region_cached(payload: &str) -> bool {
-    ILLEGAL_NUMBERS_REGION_CACHED
-        .with_cached(|numbers| numbers.iter().any(|number| payload.contains(number)))
+pub fn contains_forbidden_text_region_cached(haystack: &str) -> bool {
+    FORBIDDEN_TEXTS_REGION_CACHED
+        .with_cached(|needles| needles.iter().any(|needle| haystack.contains(needle)))
 }
 
-pub fn contains_illegal_numbers_region_local(payload: &str) -> bool {
-    ILLEGAL_NUMBERS_REGION_LOCAL
-        .with_local(|numbers| numbers.iter().any(|number| payload.contains(number)))
+pub fn contains_forbidden_text_region_local(haystack: &str) -> bool {
+    FORBIDDEN_TEXTS_REGION_LOCAL
+        .with_local(|needles| needles.iter().any(|needle| haystack.contains(needle)))
 }
