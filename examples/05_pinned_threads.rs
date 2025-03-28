@@ -1,5 +1,5 @@
 use axum::{Router, http::StatusCode, response::IntoResponse, routing::post};
-use forbidden_text_check::is_any_forbidden_text_static;
+use forbidden_text_check::contains_forbidden_text_static;
 use hyper_util::rt::TokioIo;
 use hyper_util::service::TowerToHyperService;
 use many_cpus::ProcessorSet;
@@ -95,7 +95,7 @@ fn worker_entrypoint(mut rx: Receiver<TcpStream>) {
 }
 
 async fn check(body: String) -> impl IntoResponse {
-    if is_any_forbidden_text_static(&body) {
+    if contains_forbidden_text_static(&body) {
         (StatusCode::OK, "true")
     } else {
         (StatusCode::OK, "false")
