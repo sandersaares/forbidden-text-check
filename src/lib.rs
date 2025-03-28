@@ -21,8 +21,8 @@ region_local! {
 }
 
 // For the sake of example convenience, our forbidden texts are titled
-// with numbers from zero to ITEM_COUNT. This is a few GB of data.
-const ITEM_COUNT: usize = 20_000_000;
+// with numbers from zero to ITEM_COUNT. This is 5-10 GB of data.
+const ITEM_COUNT: usize = 100_000_000;
 
 /// Generates an example data set of forbidden texts, a map of text title to bool (is it forbidden).
 fn generate_forbidden_texts() -> FzHashMap<String, bool> {

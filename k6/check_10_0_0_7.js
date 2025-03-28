@@ -12,7 +12,7 @@ export default function () {
   for (let i = 0; i < 10000; i++) {
     // Max here should ideally match the max item count in the code. Otherwise, we are looking
     // up keys that do not exist, which might make the job too easy for the service.
-    titles.push(randomIntBetween(0, 20 * 1000 * 1000).toString());
+    titles.push(randomIntBetween(0, 100 * 1000 * 1000).toString());
   }
 
   let payload = titles.join(',');
