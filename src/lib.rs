@@ -53,18 +53,18 @@ fn generate_forbidden_texts() -> Vec<String> {
     texts
 }
 
-pub fn is_forbidden_text_static(haystack: &str) -> bool {
+pub fn is_forbidden_text_static(s: &str) -> bool {
     FORBIDDEN_TEXTS
         .iter()
-        .any(|needle| haystack.starts_with(needle))
+        .any(|candidate| s.starts_with(candidate))
 }
 
-pub fn is_forbidden_text_region_cached(haystack: &str) -> bool {
+pub fn is_forbidden_text_region_cached(s: &str) -> bool {
     FORBIDDEN_TEXTS_REGION_CACHED
-        .with_cached(|needles| needles.iter().any(|needle| haystack.starts_with(needle)))
+        .with_cached(|texts| texts.iter().any(|candidate| s.starts_with(candidate)))
 }
 
-pub fn is_forbidden_text_region_local(haystack: &str) -> bool {
+pub fn is_forbidden_text_region_local(s: &str) -> bool {
     FORBIDDEN_TEXTS_REGION_LOCAL
-        .with_local(|needles| needles.iter().any(|needle| haystack.starts_with(needle)))
+        .with_local(|texts| texts.iter().any(|candidate| s.starts_with(candidate)))
 }
