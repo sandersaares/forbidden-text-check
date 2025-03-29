@@ -23,7 +23,7 @@ async fn main() {
 
     let mut work_txs = Vec::with_capacity(num_workers);
 
-    for i in 0..num_workers {
+    for _ in 0..num_workers {
         const WORKER_QUEUE_SIZE: usize = 4;
 
         let (tx, rx) = channel(WORKER_QUEUE_SIZE);
@@ -35,7 +35,7 @@ async fn main() {
         // all processors are made available for these threads on Windows, even on many-processor
         // systems with multiple processor groups where threads can otherwise be limited to only
         // one processor group.
-        all_processors.spawn_thread(move |_| worker_entrypoint(i, rx));
+        all_processors.spawn_thread(move |_| worker_entrypoint(rx));
     }
 
     listener_entrypoint(addr, work_txs).await;
@@ -53,7 +53,7 @@ async fn listener_entrypoint(addr: SocketAddr, work_txs: Vec<Sender<TcpStream>>)
     }
 }
 
-fn worker_entrypoint(_worker_index: usize, mut rx: Receiver<TcpStream>) {
+fn worker_entrypoint(mut rx: Receiver<TcpStream>) {
     // Every worker thread gets its own Tokio runtime, which means all the tasks of this
     // thread remain in this thread - there is no implicit travel between threads and
     // multithreaded activity only occurs when explicitly intended by the service author.

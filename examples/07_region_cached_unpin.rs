@@ -1,9 +1,9 @@
 use axum::{Router, http::StatusCode, response::IntoResponse, routing::post};
-use forbidden_text_check::is_forbidden_text_static;
+use forbidden_text_check::is_forbidden_text_region_cached;
 use hyper_util::rt::TokioIo;
 use hyper_util::service::TowerToHyperService;
+use many_cpus::ProcessorSet;
 use std::net::SocketAddr;
-use std::thread;
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc::{Receiver, Sender, channel};
 use tower::Service;
@@ -17,7 +17,8 @@ async fn main() {
     let addr = SocketAddr::from(([0, 0, 0, 0], 1234));
     println!("Server starting on http://{}", addr);
 
-    let num_workers = num_cpus::get();
+    let all_processors = ProcessorSet::all();
+    let num_workers = ProcessorSet::all().len();
     println!("Starting {} worker threads", num_workers);
 
     let mut work_txs = Vec::with_capacity(num_workers);
@@ -28,7 +29,13 @@ async fn main() {
         let (tx, rx) = channel(WORKER_QUEUE_SIZE);
         work_txs.push(tx);
 
-        thread::spawn(move || worker_entrypoint(rx));
+        // In each loop iteration, we spawn a new worker thread that the OS is allowed to assign
+        // to any of the processors in the set to balance load among them. This is almost entirely
+        // equivalent to `thread::spawn()`, except by using `ProcessorSet::all()` we ensure that
+        // all processors are made available for these threads on Windows, even on many-processor
+        // systems with multiple processor groups where threads can otherwise be limited to only
+        // one processor group.
+        all_processors.spawn_thread(move |_| worker_entrypoint(rx));
     }
 
     listener_entrypoint(addr, work_txs).await;
@@ -41,14 +48,15 @@ async fn listener_entrypoint(addr: SocketAddr, work_txs: Vec<Sender<TcpStream>>)
 
     loop {
         let (stream, _) = listener.accept().await.unwrap();
-
         work_txs[next_worker].send(stream).await.unwrap();
-
         next_worker = (next_worker + 1) % work_txs.len();
     }
 }
 
 fn worker_entrypoint(mut rx: Receiver<TcpStream>) {
+    // Every worker thread gets its own Tokio runtime, which means all the tasks of this
+    // thread remain in this thread - there is no implicit travel between threads and
+    // multithreaded activity only occurs when explicitly intended by the service author.
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
@@ -83,7 +91,7 @@ fn worker_entrypoint(mut rx: Receiver<TcpStream>) {
 }
 
 async fn check(body: String) -> impl IntoResponse {
-    if is_forbidden_text_static(&body) {
+    if is_forbidden_text_region_cached(&body) {
         (StatusCode::OK, "true")
     } else {
         (StatusCode::OK, "false")
