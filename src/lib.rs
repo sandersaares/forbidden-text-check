@@ -19,12 +19,12 @@ region_local! {
 }
 
 fn generate_forbidden_texts() -> Vec<String> {
-    const ITEM_COUNT: usize = 10_000_000;
+    const ITEM_COUNT: usize = 1_000_000;
 
     let mut texts = Vec::with_capacity(ITEM_COUNT);
 
-    // This will be in the hundreds of megabytes, which should be enough to not trivially fit in
-    // even large L3 caches (though server systems can be rather creative these days).
+    // This will be in the high hundreds of megabytes, which should be enough to not trivially fit
+    // in even large L3 caches (though server systems can be rather capable these days).
     //
     // For our purposes, we just want to use a large data set for easy demonstration of
     // large data set effects (which in real world apps might be more "many smaller data sets"
