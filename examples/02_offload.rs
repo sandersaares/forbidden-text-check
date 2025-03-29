@@ -7,7 +7,7 @@ use tokio::spawn;
 async fn main() {
     // The main() entrypoint thread is special and doing work directly in there is
     // less efficient in some scenarios. Spawning a new task will move the work off to
-    // a worker thread, where it may be executed more efficiently.
+    // a worker thread, where it may be executed more efficiently (depending on workload).
     spawn(async move {
         let app = Router::new().route("/check", post(check));
 

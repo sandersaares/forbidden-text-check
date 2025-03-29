@@ -8,9 +8,9 @@ use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc::{Receiver, Sender, channel};
 use tower::Service;
 
-// We start main() on a single-worker runtime because all main() does
+// We start main() on a single-threaded Tokio runtime because all main() does
 // is listen for connections and pass them on to the real worker pool.
-#[tokio::main(worker_threads = 1)]
+#[tokio::main(flavor = "current_thread")]
 async fn main() {
     increase_ulimit();
 
