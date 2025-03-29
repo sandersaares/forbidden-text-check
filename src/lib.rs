@@ -19,7 +19,7 @@ region_local! {
 }
 
 fn generate_forbidden_texts() -> Vec<String> {
-    const ITEM_COUNT: usize = 1_000_000;
+    const ITEM_COUNT: usize = 10_000_000;
 
     let mut texts = Vec::with_capacity(ITEM_COUNT);
 
@@ -33,9 +33,11 @@ fn generate_forbidden_texts() -> Vec<String> {
     let stop = u64::MAX - ITEM_COUNT as u64;
 
     while next != stop {
-        const MULTIPLIER: usize = 16;
+        const MULTIPLIER: usize = 32;
         // Concatenate the number to itself many times, so we have "texts" that are realistically
-        // long and unique, without having to bother with generating actual random data.
+        // long and unique, without having to bother with generating actual random data. We want
+        // large data sets that take up a lot of memory (even or especially if that memory is not
+        // always accessed, since real world algorithms do not just iterate from 0 to N)
         let one = next.to_string();
 
         let mut s = String::with_capacity(one.len() * MULTIPLIER);
@@ -51,18 +53,18 @@ fn generate_forbidden_texts() -> Vec<String> {
     texts
 }
 
-pub fn contains_forbidden_text_static(haystack: &str) -> bool {
+pub fn is_forbidden_text_static(haystack: &str) -> bool {
     FORBIDDEN_TEXTS
         .iter()
-        .any(|needle| haystack.contains(needle))
+        .any(|needle| haystack.starts_with(needle))
 }
 
-pub fn contains_forbidden_text_region_cached(haystack: &str) -> bool {
+pub fn is_forbidden_text_region_cached(haystack: &str) -> bool {
     FORBIDDEN_TEXTS_REGION_CACHED
-        .with_cached(|needles| needles.iter().any(|needle| haystack.contains(needle)))
+        .with_cached(|needles| needles.iter().any(|needle| haystack.starts_with(needle)))
 }
 
-pub fn contains_forbidden_text_region_local(haystack: &str) -> bool {
+pub fn is_forbidden_text_region_local(haystack: &str) -> bool {
     FORBIDDEN_TEXTS_REGION_LOCAL
-        .with_local(|needles| needles.iter().any(|needle| haystack.contains(needle)))
+        .with_local(|needles| needles.iter().any(|needle| haystack.starts_with(needle)))
 }

@@ -22,15 +22,15 @@ fn entrypoint(c: &mut Criterion) {
     g.sample_size(10);
 
     g.bench_function("static", |b| {
-        b.iter(|| contains_forbidden_text_static(HAYSTACK));
+        b.iter(|| is_forbidden_text_static(HAYSTACK));
     });
 
     g.bench_function("region_cached", |b| {
-        b.iter(|| contains_forbidden_text_region_cached(HAYSTACK));
+        b.iter(|| is_forbidden_text_region_cached(HAYSTACK));
     });
 
     g.bench_function("region_local", |b| {
-        b.iter(|| contains_forbidden_text_region_local(HAYSTACK));
+        b.iter(|| is_forbidden_text_region_local(HAYSTACK));
     });
 
     g.finish();

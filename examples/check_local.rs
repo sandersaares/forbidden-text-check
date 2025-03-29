@@ -5,14 +5,14 @@
 
 use std::hint::black_box;
 
-use forbidden_text_check::contains_forbidden_text_region_local;
+use forbidden_text_check::is_forbidden_text_region_local;
 
-const ITERATION_COUNT: u64 = 10;
+const ITERATION_COUNT: u64 = 1000;
 
 fn main() {
     for _ in 0..ITERATION_COUNT {
         // The black box ensures that the operation is not optimized away due to unused result.
-        black_box(contains_forbidden_text_region_local(HAYSTACK));
+        black_box(is_forbidden_text_region_local(HAYSTACK));
     }
 }
 
