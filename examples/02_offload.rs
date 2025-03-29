@@ -1,3 +1,5 @@
+//! Note: benchmarking showed this modification is not beneficial for this workload.
+
 use axum::{Router, http::StatusCode, response::IntoResponse, routing::post};
 use forbidden_text_check::is_forbidden_text_static;
 use std::net::SocketAddr;
