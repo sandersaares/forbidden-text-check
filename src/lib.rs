@@ -68,3 +68,60 @@ pub fn is_forbidden_text_region_local(s: &str) -> bool {
     FORBIDDEN_TEXTS_REGION_LOCAL
         .with_local(|texts| texts.iter().any(|candidate| s.starts_with(candidate)))
 }
+
+/// Our web service checks different variants of the input string concurrently. This generates
+/// concurrent load stress and makes the scenario a bit more realistic because most web services
+/// do things like spawning async tasks and awaiting them, which is what we are doing with these.
+pub fn into_variants(s: String) -> Vec<String> {
+    // The output will contain:
+    // - The original string (s)
+    // - The original string reversed.
+    // - The original string uppercased.
+    // - The original string lowercased.
+    // - The reversed string uppercased.
+    // - The reversed string lowercased.
+    // - The original string with the first word removed.
+    // - The reversed string with the first word removed.
+
+    let mut variants = Vec::with_capacity(8);
+
+    let first_word_removed: String = s
+        .split_whitespace()
+        .skip(1)
+        .collect::<Vec<&str>>()
+        .join(" ");
+
+    variants.push(if first_word_removed.is_empty() {
+        s.clone()
+    } else {
+        first_word_removed
+    });
+
+    variants.push(s.to_uppercase());
+
+    variants.push(s.to_lowercase());
+
+    let reversed: String = s.chars().rev().collect();
+
+    variants.push(reversed.to_uppercase());
+
+    variants.push(reversed.to_lowercase());
+
+    let reversed_first_word_removed: String = reversed
+        .split_whitespace()
+        .skip(1)
+        .collect::<Vec<&str>>()
+        .join(" ");
+
+    variants.push(if reversed_first_word_removed.is_empty() {
+        reversed.clone()
+    } else {
+        reversed_first_word_removed
+    });
+
+    variants.push(reversed);
+
+    variants.push(s);
+
+    variants
+}

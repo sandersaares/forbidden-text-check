@@ -1,5 +1,5 @@
 use axum::{Router, http::StatusCode, response::IntoResponse, routing::post};
-use forbidden_text_check::is_forbidden_text_region_cached;
+use forbidden_text_check::{into_variants, is_forbidden_text_region_cached};
 use hyper_util::rt::TokioIo;
 use hyper_util::service::TowerToHyperService;
 use many_cpus::ProcessorSet;
@@ -91,7 +91,20 @@ fn worker_entrypoint(mut rx: Receiver<TcpStream>) {
 }
 
 async fn check(body: String) -> impl IntoResponse {
-    if is_forbidden_text_region_cached(&body) {
+    // We check different variants of the input string, to create
+    // a more realistic workload with some async+await activity.
+    let variants = into_variants(body);
+
+    let mut tasks = Vec::with_capacity(variants.len());
+    for variant in variants {
+        tasks.push(tokio::spawn(async move {
+            is_forbidden_text_region_cached(&variant)
+        }));
+    }
+
+    let results = futures::future::join_all(tasks).await;
+
+    if results.into_iter().any(|r| r.unwrap()) {
         (StatusCode::OK, "true")
     } else {
         (StatusCode::OK, "false")
