@@ -4,22 +4,22 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-axum = "0.8.1"
-hyper = "1.6.0"
-hyper-util = { version = "0.1.10", features = ["tokio"] }
 region_cached = "0.1.1"
 region_local = "0.1.1"
+
+[dev-dependencies]
+axum = "0.8.1"
+# We use the Git version because the crates.io one lacks some important fixes.
+criterion = { git = "https://github.com/bheisler/criterion.rs.git" }
+hyper = "1.6.0"
+hyper-util = { version = "0.1.10", features = ["tokio"] }
 many_cpus = "0.1.1"
 num_cpus = "1.16.0"
 tokio = { version = "1.44.1", features = ["full"] }
 tower = "0.5.2"
 
-[target.'cfg(unix)'.dependencies]
+[target.'cfg(unix)'.dev-dependencies]
 nix = { version = "0.29.0", features = ["resource"] }
-
-[dev-dependencies]
-# We use the Git version because the crates.io one lacks some important fixes.
-criterion = { git = "https://github.com/bheisler/criterion.rs.git" }
 
 [profile.release]
 # This ensures we have meaningful stack traces when profiling.
