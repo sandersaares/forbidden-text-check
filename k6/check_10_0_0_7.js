@@ -1,9 +1,5 @@
 import http from 'k6/http';
 
-export const options = {
-  noConnectionReuse: true,
-};
-
 export default function () {
   let params = {
     // Reasonable SLA for heavy processing - anything longer than this is failed request.
