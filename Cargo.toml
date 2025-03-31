@@ -5,7 +5,6 @@ edition = "2024"
 
 [dependencies]
 region_cached = "0.1.1"
-region_local = "0.1.1"
 
 [dev-dependencies]
 axum = "0.8.1"

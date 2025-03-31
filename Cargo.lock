@@ -397,7 +397,6 @@ dependencies = [
  "nix",
  "num_cpus",
  "region_cached",
- "region_local",
  "tokio",
  "tower",
 ]
@@ -1170,20 +1169,6 @@ name = "region_cached"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d35fa6f813da881018d7da27e912c4ce1a6800d36479bf6769d9d96d202eef3f"
-dependencies = [
- "arc-swap",
- "derive_more",
- "linked",
- "many_cpus",
- "rsevents",
- "simple-mermaid",
-]
-
-[[package]]
-name = "region_local"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ebcc493da6d5a90be23de7622de14a8639bfb6adfcd1f39afaa417175b8e1712"
 dependencies = [
  "arc-swap",
  "derive_more",

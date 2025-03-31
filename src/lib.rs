@@ -6,16 +6,11 @@
 use std::sync::LazyLock;
 
 use region_cached::{RegionCachedExt, region_cached};
-use region_local::{RegionLocalExt, region_local};
 
 pub static FORBIDDEN_TEXTS: LazyLock<Vec<String>> = LazyLock::new(generate_forbidden_texts);
 
 region_cached! {
     pub static FORBIDDEN_TEXTS_REGION_CACHED: Vec<String> = generate_forbidden_texts();
-}
-
-region_local! {
-    pub static FORBIDDEN_TEXTS_REGION_LOCAL: Vec<String> = generate_forbidden_texts();
 }
 
 fn generate_forbidden_texts() -> Vec<String> {
@@ -62,9 +57,4 @@ pub fn is_forbidden_text_static(s: &str) -> bool {
 pub fn is_forbidden_text_region_cached(s: &str) -> bool {
     FORBIDDEN_TEXTS_REGION_CACHED
         .with_cached(|texts| texts.iter().any(|candidate| s.starts_with(candidate)))
-}
-
-pub fn is_forbidden_text_region_local(s: &str) -> bool {
-    FORBIDDEN_TEXTS_REGION_LOCAL
-        .with_local(|texts| texts.iter().any(|candidate| s.starts_with(candidate)))
 }

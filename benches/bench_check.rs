@@ -3,7 +3,6 @@ use std::hint::black_box;
 use criterion::{Criterion, criterion_group, criterion_main};
 use forbidden_text_check::*;
 use region_cached::RegionCachedExt;
-use region_local::RegionLocalExt;
 
 criterion_group!(benches, entrypoint);
 criterion_main!(benches);
@@ -16,7 +15,6 @@ fn entrypoint(c: &mut Criterion) {
     // Touch each of the data sets to ensure they are loaded into memory.
     black_box(FORBIDDEN_TEXTS.len());
     black_box(FORBIDDEN_TEXTS_REGION_CACHED.with_cached(|x| x.len()));
-    black_box(FORBIDDEN_TEXTS_REGION_LOCAL.with_local(|x| x.len()));
 
     // The data set is huge, so let's not be greedy.
     g.sample_size(10);
@@ -27,10 +25,6 @@ fn entrypoint(c: &mut Criterion) {
 
     g.bench_function("region_cached", |b| {
         b.iter(|| is_forbidden_text_region_cached(HAYSTACK));
-    });
-
-    g.bench_function("region_local", |b| {
-        b.iter(|| is_forbidden_text_region_local(HAYSTACK));
     });
 
     g.finish();
