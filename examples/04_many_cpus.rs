@@ -18,7 +18,7 @@ async fn main() {
     println!("Server starting on http://{}", addr);
 
     let all_processors = ProcessorSet::all();
-    let num_workers = ProcessorSet::all().len();
+    let num_workers = all_processors.len();
     println!("Starting {} worker threads", num_workers);
 
     let mut work_txs = Vec::with_capacity(num_workers);
