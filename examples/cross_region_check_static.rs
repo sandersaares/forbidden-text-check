@@ -1,7 +1,9 @@
-//! For easy profiling and comparison of the different ways to do the checking.
+//! We select two processors in different memory regions.
+//! * Processor 1 will generate the data set by being the first to touch the static variable.
+//! * Processor 2 will use the data set for the checking logic.
 //!
-//! Ideally the different "check_*" example variants have no differences because
-//! all the action is happening on the same thread, so the optimization do not help.
+//! This allows us to compare cross-region and same-region performance
+//! by comparing what this example binary does with the one in `check_static.rs`.
 
 use std::{hint::black_box, num::NonZero, thread};
 
@@ -11,13 +13,6 @@ use many_cpus::ProcessorSet;
 const ITERATION_COUNT: u64 = 1000;
 
 fn main() {
-    // We select two processors in different memory regions.
-    // * Processor 1 will generate the data set by being the first to touch the static variable.
-    // * Processor 2 will use the data set for the checking logic.
-    //
-    // This allows us to compare cross-region and same-region performance
-    // by comparing what this example binary does with the one in `check_static.rs`.
-
     let Some(two_processors) = ProcessorSet::builder()
         .different_memory_regions()
         .performance_processors_only()
