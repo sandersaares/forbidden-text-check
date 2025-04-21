@@ -17,8 +17,8 @@ async fn main() {
     let addr = SocketAddr::from(([0, 0, 0, 0], 1234));
     println!("Server starting on http://{}", addr);
 
-    let all_processors = ProcessorSet::all();
-    let num_workers = ProcessorSet::all().len();
+    let processors = ProcessorSet::default();
+    let num_workers = processors.len();
     println!("Starting {} worker threads", num_workers);
 
     let mut work_txs = Vec::with_capacity(num_workers);
@@ -31,11 +31,11 @@ async fn main() {
 
         // In each loop iteration, we spawn a new worker thread that the OS is allowed to assign
         // to any of the processors in the set to balance load among them. This is almost entirely
-        // equivalent to `thread::spawn()`, except by using `ProcessorSet::all()` we ensure that
+        // equivalent to `thread::spawn()`, except by using `ProcessorSet::default()` we ensure that
         // all processors are made available for these threads on Windows, even on many-processor
         // systems with multiple processor groups where threads can otherwise be limited to only
         // one processor group.
-        all_processors.spawn_thread(move |_| worker_entrypoint(rx));
+        processors.spawn_thread(move |_| worker_entrypoint(rx));
     }
 
     listener_entrypoint(addr, work_txs).await;

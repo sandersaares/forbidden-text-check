@@ -18,8 +18,8 @@ async fn main() {
     let addr = SocketAddr::from(([0, 0, 0, 0], 1234));
     println!("Server starting on http://{}", addr);
 
-    let all_processors = ProcessorSet::all();
-    let num_workers = ProcessorSet::all().len();
+    let processors = ProcessorSet::default();
+    let num_workers = processors.len();
     println!("Starting {} worker threads", num_workers);
 
     const WORKER_QUEUE_SIZE: usize = 4;
@@ -33,7 +33,7 @@ async fn main() {
 
     // This method will create one thread per processor and execute the callback on each of them.
     // Every thread will be pinned to a specific processor, so the OS will not move them around.
-    all_processors.spawn_threads(move |_| {
+    processors.spawn_threads(move |_| {
         let rx = {
             let mut rxs = rxs.lock().unwrap();
             rxs.pop().unwrap()

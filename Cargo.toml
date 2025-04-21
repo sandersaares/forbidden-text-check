@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-region_cached = "0.1.1"
+region_cached = "0.1.10"
 
 [dev-dependencies]
 axum = "0.8.1"
@@ -12,7 +12,7 @@ axum = "0.8.1"
 criterion = { git = "https://github.com/bheisler/criterion.rs.git" }
 hyper = "1.6.0"
 hyper-util = { version = "0.1.10", features = ["tokio"] }
-many_cpus = "0.1.1"
+many_cpus = "0.3.1"
 num_cpus = "1.16.0"
 tokio = { version = "1.44.1", features = ["full"] }
 tower = "0.5.2"
